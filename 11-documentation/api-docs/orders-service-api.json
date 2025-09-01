@@ -1,0 +1,354 @@
+# OrdersService REST API Specification
+
+## Endpoints
+
+### POST /api/v1/orders
+**Description**: Create a new order
+**Content-Type**: application/json
+**Authorization**: Bearer {JWT_TOKEN}
+
+**Request Body**:
+```json
+{
+  "customerId": "cust_12345",
+  "items": [
+    {
+      "bookId": "978-0134685991",
+      "bookTitle": "Effective Java",
+      "quantity": 2,
+      "unitPrice": 45.99
+    },
+    {
+      "bookId": "978-0596007126", 
+      "bookTitle": "Head First Design Patterns",
+      "quantity": 1,
+      "unitPrice": 39.99
+    }
+  ],
+  "shippingAddress": {
+    "street": "123 Main St",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10001",
+    "country": "USA"
+  },
+  "paymentMethod": {
+    "type": "CREDIT_CARD",
+    "cardNumber": "4111111111111111",
+    "expiryMonth": 12,
+    "expiryYear": 2026,
+    "cvv": "123",
+    "holderName": "John Doe"
+  }
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "orderId": "ord_67890abcdef",
+  "customerId": "cust_12345",
+  "items": [
+    {
+      "id": 1,
+      "bookId": "978-0134685991",
+      "bookTitle": "Effective Java",
+      "quantity": 2,
+      "unitPrice": 45.99,
+      "subtotal": 91.98
+    },
+    {
+      "id": 2,
+      "bookId": "978-0596007126",
+      "bookTitle": "Head First Design Patterns", 
+      "quantity": 1,
+      "unitPrice": 39.99,
+      "subtotal": 39.99
+    }
+  ],
+  "totalAmount": 131.97,
+  "status": "PENDING",
+  "createdAt": "2025-08-18T10:30:00",
+  "updatedAt": "2025-08-18T10:30:00"
+}
+```
+
+### GET /api/v1/orders/{orderId}
+**Description**: Retrieve order by ID
+**Authorization**: Bearer {JWT_TOKEN}
+
+**Response (200 OK)**:
+```json
+{
+  "orderId": "ord_67890abcdef",
+  "customerId": "cust_12345",
+  "items": [
+    {
+      "id": 1,
+      "bookId": "978-0134685991",
+      "bookTitle": "Effective Java",
+      "quantity": 2,
+      "unitPrice": 45.99,
+      "subtotal": 91.98
+    }
+  ],
+  "totalAmount": 131.97,
+  "status": "CONFIRMED",
+  "createdAt": "2025-08-18T10:30:00",
+  "updatedAt": "2025-08-18T10:35:00"
+}
+```
+
+### GET /api/v1/orders
+**Description**: List orders with optional filters
+**Authorization**: Bearer {JWT_TOKEN}
+**Query Parameters**:
+- customerId (optional): Filter by customer ID
+- status (optional): Filter by order status
+
+**Response (200 OK)**:
+```json
+{
+  "orders": [
+    {
+      "orderId": "ord_67890abcdef",
+      "customerId": "cust_12345",
+      "totalAmount": 131.97,
+      "status": "CONFIRMED",
+      "createdAt": "2025-08-18T10:30:00",
+      "updatedAt": "2025-08-18T10:35:00"
+    }
+  ],
+  "totalCount": 1,
+  "page": 0,
+  "pageSize": 20
+}
+```
+
+### PUT /api/v1/orders/{orderId}/status
+**Description**: Update order status
+**Authorization**: Bearer {JWT_TOKEN}
+**Query Parameters**:
+- status: New status value
+
+**Response (200 OK)**:
+```json
+{
+  "orderId": "ord_67890abcdef",
+  "status": "PAYMENT_COMPLETED",
+  "updatedAt": "2025-08-18T10:40:00"
+}
+```
+
+### DELETE /api/v1/orders/{orderId}
+**Description**: Cancel an order
+**Authorization**: Bearer {JWT_TOKEN}
+
+**Response (204 No Content)**
+
+## JSON Schema for Order Creation
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://api.globalbooks.com/schemas/order-create-request.json",
+  "title": "Order Creation Request",
+  "description": "Schema for creating a new order in GlobalBooks system",
+  "type": "object",
+  "required": ["customerId", "items"],
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "pattern": "^cust_[a-zA-Z0-9]{5,20}$",
+      "description": "Unique customer identifier"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/definitions/OrderItem"
+      }
+    },
+    "shippingAddress": {
+      "$ref": "#/definitions/Address"
+    },
+    "paymentMethod": {
+      "$ref": "#/definitions/PaymentMethod"
+    }
+  },
+  "definitions": {
+    "OrderItem": {
+      "type": "object",
+      "required": ["bookId", "bookTitle", "quantity", "unitPrice"],
+      "properties": {
+        "bookId": {
+          "type": "string",
+          "pattern": "^978-[0-9]{10}$",
+          "description": "ISBN-13 format book identifier"
+        },
+        "bookTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "unitPrice": {
+          "type": "number",
+          "minimum": 0.01,
+          "multipleOf": 0.01
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "required": ["street", "city", "zipCode", "country"],
+      "properties": {
+        "street": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 100
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "state": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "zipCode": {
+          "type": "string",
+          "pattern": "^[0-9]{5}(-[0-9]{4})?$"
+        },
+        "country": {
+          "type": "string",
+          "enum": ["USA", "CAN", "GBR", "DEU", "FRA", "JPN", "AUS"]
+        }
+      }
+    },
+    "PaymentMethod": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER"]
+        },
+        "cardNumber": {
+          "type": "string",
+          "pattern": "^[0-9]{13,19}$"
+        },
+        "expiryMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "expiryYear": {
+          "type": "integer",
+          "minimum": 2025,
+          "maximum": 2035
+        },
+        "cvv": {
+          "type": "string",
+          "pattern": "^[0-9]{3,4}$"
+        },
+        "holderName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        }
+      },
+      "if": {
+        "properties": {
+          "type": {
+            "enum": ["CREDIT_CARD", "DEBIT_CARD"]
+          }
+        }
+      },
+      "then": {
+        "required": ["cardNumber", "expiryMonth", "expiryYear", "cvv", "holderName"]
+      }
+    }
+  }
+}
+```
+
+## Error Response Schema
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://api.globalbooks.com/schemas/error-response.json",
+  "title": "Error Response",
+  "type": "object",
+  "required": ["error", "message", "timestamp"],
+  "properties": {
+    "error": {
+      "type": "string",
+      "description": "Error code"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable error message"
+    },
+    "details": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional error details"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "path": {
+      "type": "string",
+      "description": "Request path that caused the error"
+    }
+  }
+}
+```
+
+## Sample Error Responses
+
+**400 Bad Request - Validation Error**:
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "Invalid request data",
+  "details": [
+    "customerId: must match pattern ^cust_[a-zA-Z0-9]{5,20}$",
+    "items[0].quantity: must be at least 1"
+  ],
+  "timestamp": "2025-08-18T10:30:00Z",
+  "path": "/api/v1/orders"
+}
+```
+
+**401 Unauthorized**:
+```json
+{
+  "error": "UNAUTHORIZED",
+  "message": "Invalid or missing JWT token",
+  "timestamp": "2025-08-18T10:30:00Z",
+  "path": "/api/v1/orders"
+}
+```
+
+**404 Not Found**:
+```json
+{
+  "error": "ORDER_NOT_FOUND",
+  "message": "Order with ID 'ord_invalid' not found",
+  "timestamp": "2025-08-18T10:30:00Z",
+  "path": "/api/v1/orders/ord_invalid"
+}
+```

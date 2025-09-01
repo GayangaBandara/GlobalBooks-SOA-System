@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: catalog-service
+
+logging:
+  level:
+    com.globalbooks.catalog: DEBUG
+    org.springframework.ws: DEBUG
+
+soap:
+  service:
+    url: http://localhost:8080/catalog/soap

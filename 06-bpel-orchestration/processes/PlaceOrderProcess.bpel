@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="PlaceOrderProcess"
+         targetNamespace="http://bpel.globalbooks.com/"
+         xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:tns="http://bpel.globalbooks.com/"
+         xmlns:catalog="http://catalog.globalbooks.com/"
+         xmlns:orders="http://orders.globalbooks.com/"
+         xmlns:payments="http://payments.globalbooks.com/"
+         xmlns:shipping="http://shipping.globalbooks.com/"
+         suppressJoinFailure="yes">
+
+    <!-- Partner Link Definitions -->
+    <partnerLinks>
+        <partnerLink name="client" 
+                    partnerLinkType="tns:PlaceOrderLT" 
+                    myRole="PlaceOrderProvider"/>
+        
+        <partnerLink name="catalogService" 
+                    partnerLinkType="tns:CatalogServiceLT" 
+                    partnerRole="CatalogProvider"/>
+        
+        <partnerLink name="ordersService" 
+                    partnerLinkType="tns:OrdersServiceLT" 
+                    partnerRole="OrdersProvider"/>
+        
+        <partnerLink name="paymentsService" 
+                    partnerLinkType="tns:PaymentsServiceLT" 
+                    partnerRole="PaymentsProvider"/>
+        
+        <partnerLink name="shippingService" 
+                    partnerLinkType="tns:ShippingServiceLT" 
+                    partnerRole="ShippingProvider"/>
+    </partnerLinks>
+
+    <!-- Variable Definitions -->
+    <variables>
+        <variable name="placeOrderRequest" messageType="tns:PlaceOrderRequestMessage"/>
+        <variable name="placeOrderResponse" messageType="tns:PlaceOrderResponseMessage"/>
+        <variable name="catalogRequest" messageType="catalog:getBookPriceRequest"/>
+        <variable name="catalogResponse" messageType="catalog:getBookPriceResponse"/>
+        <variable name="orderRequest" messageType="orders:CreateOrderRequest"/>
+        <variable name="orderResponse" messageType="orders:CreateOrderResponse"/>
+        <variable name="paymentRequest" messageType="payments:ProcessPaymentRequest"/>
+        <variable name="paymentResponse" messageType="payments:ProcessPaymentResponse"/>
+        <variable name="shippingRequest" messageType="shipping:CreateShipmentRequest"/>
+        <variable name="shippingResponse" messageType="shipping:CreateShipmentResponse"/>
+        <variable name="totalAmount" type="xsd:double"/>
+        <variable name="currentItem" type="xsd:int"/>
+        <variable name="itemCount" type="xsd:int"/>
+    </variables>
+
+    <!-- Main Process Flow -->
+    <sequence>
+        
+        <!-- 1. Receive Order Request from Client -->
+        <receive name="receiveOrderRequest"
+                partnerLink="client"
+                operation="placeOrder"
+                variable="placeOrderRequest"
+                createInstance="yes"/>
+
+        <!-- 2. Initialize Variables -->
+        <assign name="initializeVariables">
+            <copy>
+                <from>0</from>
+                <to>$totalAmount</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$currentItem</to>
+            </copy>
+            <copy>
+                <from>count($placeOrderRequest.orderItems/item)</from>
+                <to>$itemCount</to>
+            </copy>
+        </assign>
+
+        <!-- 3. Price Lookup Loop for Each Item -->
+        <while name="priceCalculationLoop">
+            <condition>$currentItem &lt; $itemCount</condition>
+            
+            <sequence>
+                <!-- Get current item -->
+                <assign name="setCurrentItemData">
+                    <copy>
+                        <from>$placeOrderRequest.orderItems/item[$currentItem + 1]/bookId</from>
+                        <to>$catalogRequest.bookId</to>
+                    </copy>
+                </assign>
+                
+                <!-- Invoke Catalog Service for Price -->
+                <invoke name="getPriceFromCatalog"
+                       partnerLink="catalogService"
+                       operation="getBookPrice"
+                       inputVariable="catalogRequest"
+                       outputVariable="catalogResponse"/>
+                
+                <!-- Calculate subtotal and add to total -->
+                <assign name="calculateSubtotal">
+                    <copy>
+                        <from>$totalAmount + 
+                              ($catalogResponse.price * 
+                               $placeOrderRequest.orderItems/item[$currentItem + 1]/quantity)</from>
+                        <to>$totalAmount</to>
+                    </copy>
+                    <copy>
+                        <from>$currentItem + 1</from>
+                        <to>$currentItem</to>
+                    </copy>
+                </assign>
+            </sequence>
+        </while>
+
+        <!-- 4. Create Order via Orders Service -->
+        <assign name="prepareOrderRequest">
+            <copy>
+                <from>$placeOrderRequest.customerId</from>
+                <to>$orderRequest.customerId</to>
+            </copy>
+            <copy>
+                <from>$placeOrderRequest.orderItems</from>
+                <to>$orderRequest.items</to>
+            </copy>
+            <copy>
+                <from>$totalAmount</from>
+                <to>$orderRequest.totalAmount</to>
+            </copy>
+        </assign>
+        
+        <invoke name="createOrder"
+               partnerLink="ordersService"
+               operation="createOrder"
+               inputVariable="orderRequest"
+               outputVariable="orderResponse"/>
+
+        <!-- 5. Process Payment -->
+        <assign name="preparePaymentRequest">
+            <copy>
+                <from>$orderResponse.orderId</from>
+                <to>$paymentRequest.orderId</to>
+            </copy>
+            <copy>
+                <from>$totalAmount</from>
+                <to>$paymentRequest.amount</to>
+            </copy>
+            <copy>
+                <from>$placeOrderRequest.paymentMethod</from>
+                <to>$paymentRequest.paymentMethod</to>
+            </copy>
+        </assign>
+        
+        <invoke name="processPayment"
+               partnerLink="paymentsService"
+               operation="processPayment"
+               inputVariable="paymentRequest"
+               outputVariable="paymentResponse"/>
+
+        <!-- 6. Create Shipment (if payment successful) -->
+        <if name="checkPaymentSuccess">
+            <condition>$paymentResponse.status = 'SUCCESS'</condition>
+            
+            <sequence>
+                <assign name="prepareShippingRequest">
+                    <copy>
+                        <from>$orderResponse.orderId</from>
+                        <to>$shippingRequest.orderId</to>
+                    </copy>
+                    <copy>
+                        <from>$placeOrderRequest.shippingAddress</from>
+                        <to>$shippingRequest.shippingAddress</to>
+                    </copy>
+                    <copy>
+                        <from>$placeOrderRequest.orderItems</from>
+                        <to>$shippingRequest.items</to>
+                    </copy>
+                </assign>
+                
+                <invoke name="createShipment"
+                       partnerLink="shippingService"
+                       operation="createShipment"
+                       inputVariable="shippingRequest"
+                       outputVariable="shippingResponse"/>
+            </sequence>
+        </if>
+
+        <!-- 7. Prepare Response -->
+        <assign name="prepareResponse">
+            <copy>
+                <from>$orderResponse.orderId</from>
+                <to>$placeOrderResponse.orderId</to>
+            </copy>
+            <copy>
+                <from>$totalAmount</from>
+                <to>$placeOrderResponse.totalAmount</to>
+            </copy>
+            <copy>
+                <from>$paymentResponse.status</from>
+                <to>$placeOrderResponse.status</to>
+            </copy>
+            <copy>
+                <from>
+                    if ($paymentResponse.status = 'SUCCESS') 
+                    then $shippingResponse.trackingNumber 
+                    else ''
+                </from>
+                <to>$placeOrderResponse.trackingNumber</to>
+            </copy>
+        </assign>
+
+        <!-- 8. Reply to Client -->
+        <reply name="replyToClient"
+              partnerLink="client"
+              operation="placeOrder"
+              variable="placeOrderResponse"/>
+
+    </sequence>
+
+    <!-- Fault Handlers -->
+    <faultHandlers>
+        <catch faultName="catalog:CatalogServiceFault">
+            <assign name="prepareCatalogErrorResponse">
+                <copy>
+                    <from>'CATALOG_ERROR'</from>
+                    <to>$placeOrderResponse.status</to>
+                </copy>
+                <copy>
+                    <from>'Unable to retrieve book pricing information'</from>
+                    <to>$placeOrderResponse.errorMessage</to>
+                </copy>
+            </assign>
+            <reply name="replyWithCatalogError"
+                  partnerLink="client"
+                  operation="placeOrder"
+                  variable="placeOrderResponse"
+                  faultName="tns:PlaceOrderFault"/>
+        </catch>
+        
+        <catch faultName="payments:PaymentServiceFault">
+            <assign name="preparePaymentErrorResponse">
+                <copy>
+                    <from>'PAYMENT_FAILED'</from>
+                    <to>$placeOrderResponse.status</to>
+                </copy>
+                <copy>
+                    <from>'Payment processing failed'</from>
+                    <to>$placeOrderResponse.errorMessage</to>
+                </copy>
+            </assign>
+            <reply name="replyWithPaymentError"
+                  partnerLink="client"
+                  operation="placeOrder"
+                  variable="placeOrderResponse"
+                  faultName="tns:PlaceOrderFault"/>
+        </catch>
+        
+        <catchAll>
+            <assign name="prepareGenericErrorResponse">
+                <copy>
+                    <from>'SYSTEM_ERROR'</from>
+                    <to>$placeOrderResponse.status</to>
+                </copy>
+                <copy>
+                    <from>'An unexpected error occurred during order processing'</from>
+                    <to>$placeOrderResponse.errorMessage</to>
+                </copy>
+            </assign>
+            <reply name="replyWithGenericError"
+                  partnerLink="client"
+                  operation="placeOrder"
+                  variable="placeOrderResponse"
+                  faultName="tns:PlaceOrderFault"/>
+        </catchAll>
+    </faultHandlers>
+
+</process>

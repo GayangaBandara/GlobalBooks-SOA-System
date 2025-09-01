@@ -1,0 +1,43 @@
+{
+    "info": {
+        "name": "GlobalBooks Orders API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Postman collection for testing the Orders API"
+    },
+    "item": [
+        {
+            "name": "Create Order",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"customerId\": \"CUST123\",\n    \"items\": [\n        {\n            \"productId\": \"BOOK001\",\n            \"quantity\": 2,\n            \"price\": 1500\n        },\n        {\n            \"productId\": \"BOOK002\",\n            \"quantity\": 1,\n            \"price\": 1000\n        }\n    ],\n    \"totalAmount\": 4000\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8081/api/v1/orders",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8081",
+                    "path": [
+                        "api",
+                        "v1",
+                        "orders"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}

@@ -1,0 +1,138 @@
+# Java
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.settings/
+.classpath
+.project
+.factorypath
+.apt_generated
+.springBeans
+
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# STS (Spring Tool Suite)
+.springBeans
+.sts4-cache/
+
+# Operating System
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Project specific
+*.env
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# RabbitMQ
+rabbitmq/*
+!rabbitmq/definitions.json
+!rabbitmq/rabbitmq.conf
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# BPEL temporary files
+06-bpel-orchestration/**/tmp/
+06-bpel-orchestration/**/temp/
+
+# Security sensitive files
+08-security/certificates/**
+!08-security/certificates/.gitkeep
+08-security/oauth2/secrets/
+08-security/ws-security/keys/
+
+# Test reports and coverage
+09-testing/**/reports/
+09-testing/**/coverage/
+jacoco.exec
+surefire-reports/
+
+# Documentation generated files
+11-documentation/api-docs/generated/
+12-reports/generated/
+
+# Temporary files
+**/temp/
+**/tmp/
+**/*.tmp
+**/*.temp
+
+# Node (for any UI components)
+node_modules/
+npm-debug.log
+yarn-error.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Compiled output
+**/dist/
+**/build/
+**/out/
+
+# Kubernetes
+10-deployment/kubernetes/**/*.secret.yaml
+10-deployment/kubernetes/secrets/
+
+# Cloud provider specific
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraformrc
+terraform.rc

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SOAP UI Test Suite for CatalogService -->
+<con:soapui-project id="CatalogService-TestProject" 
+                   name="CatalogService Tests" 
+                   resourceRoot="" 
+                   xmlns:con="http://eviware.com/soapui/config">
+  
+  <con:settings/>
+  
+  <con:interface xsi:type="con:WsdlInterface" 
+                id="CatalogServiceInterface" 
+                wsaVersion="NONE" 
+                name="CatalogServiceSoap" 
+                type="wsdl" 
+                bindingName="{http://catalog.globalbooks.com/}CatalogServiceBinding" 
+                soapVersion="1_1" 
+                anonymous="optional" 
+                definition="http://localhost:8080/catalog/soap?wsdl" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart="http://localhost:8080/catalog/soap?wsdl"/>
+    <con:endpoints>
+      <con:endpoint>http://localhost:8080/catalog/soap</con:endpoint>
+    </con:endpoints>
+    
+    <!-- Search Books Operation -->
+    <con:operation id="searchBooks" interface="CatalogServiceInterface" name="searchBooks" 
+                  bindingOperationName="searchBooks" type="Request-Response" 
+                  inputName="" receivesAttachments="false" sendsAttachments="false" 
+                  anonymous="optional">
+      <con:settings/>
+      <con:call id="SearchBooks-Success" name="SearchBooks-Success">
+        <con:settings/>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://localhost:8080/catalog/soap</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:searchBooksRequest>
+         <cat:query>Java</cat:query>
+         <cat:category>Programming</cat:category>
+      </cat:searchBooksRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="ValidSOAPResponse"/>
+        <con:assertion type="Schema Compliance" id="SchemaCompliance"/>
+        <con:assertion type="XPath Match" id="BooksReturned">
+          <con:configuration>
+            <path>//cat:books[position() >= 1]</path>
+            <content></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Response Time" id="ResponseTime">
+          <con:configuration>
+            <time>2000</time>
+          </con:configuration>
+        </con:assertion>
+      </con:call>
+    </con:operation>
+    
+    <!-- Get Book By ID Operation -->
+    <con:operation id="getBookById" interface="CatalogServiceInterface" name="getBookById">
+      <con:call id="GetBookById-Valid" name="GetBookById-Valid">
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:getBookByIdRequest>
+         <cat:bookId>978-0134685991</cat:bookId>
+      </cat:getBookByIdRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XPath Match" id="BookFound">
+          <con:configuration>
+            <path>//cat:book/cat:isbn[text()='978-0134685991']</path>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="BookTitle">
+          <con:configuration>
+            <path>//cat:book/cat:title[text()='Effective Java']</path>
+          </con:configuration>
+        </con:assertion>
+      </con:call>
+      
+      <con:call id="GetBookById-NotFound" name="GetBookById-NotFound">
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password>catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:getBookByIdRequest>
+         <cat:bookId>978-9999999999</cat:bookId>
+      </cat:getBookByIdRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault" id="ExpectedFault"/>
+      </con:call>
+    </con:operation>
+    
+    <!-- Get Book Price Operation -->
+    <con:operation id="getBookPrice" interface="CatalogServiceInterface" name="getBookPrice">
+      <con:call id="GetPrice-Valid" name="GetPrice-Valid">
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password>catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:getBookPriceRequest>
+         <cat:bookId>978-0134685991</cat:bookId>
+      </cat:getBookPriceRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XPath Match" id="PriceReturned">
+          <con:configuration>
+            <path>//cat:price[text()='45.99']</path>
+          </con:configuration>
+        </con:assertion>
+      </con:call>
+    </con:operation>
+    
+    <!-- Check Availability Operation -->
+    <con:operation id="checkAvailability" interface="CatalogServiceInterface" name="checkAvailability">
+      <con:call id="CheckAvailability-InStock" name="CheckAvailability-InStock">
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password>catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:checkAvailabilityRequest>
+         <cat:bookId>978-0134685991</cat:bookId>
+         <cat:quantity>5</cat:quantity>
+      </cat:checkAvailabilityRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XPath Match" id="Available">
+          <con:configuration>
+            <path>//cat:available[text()='true']</path>
+          </con:configuration>
+        </con:assertion>
+      </con:call>
+      
+      <con:call id="CheckAvailability-OutOfStock" name="CheckAvailability-OutOfStock">
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <wsse:UsernameToken>
+            <wsse:Username>catalog-service</wsse:Username>
+            <wsse:Password>catalog123</wsse:Password>
+         </wsse:UsernameToken>
+      </wsse:Security>
+   </soapenv:Header>
+   <soapenv:Body>
+      <cat:checkAvailabilityRequest>
+         <cat:bookId>978-0134685991</cat:bookId>
+         <cat:quantity>200</cat:quantity>
+      </cat:checkAvailabilityRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XPath Match" id="NotAvailable">
+          <con:configuration>
+            <path>//cat:available[text()='false']</path>
+          </con:configuration>
+        </con:assertion>
+      </con:call>
+    </con:operation>
+    
+  </con:interface>
+  
+  <!-- Test Suite -->
+  <con:testSuite id="CatalogService-TestSuite" name="CatalogService Test Suite">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    
+    <con:testCase id="CatalogService-SmokeTest" name="Smoke Test">
+      <con:settings/>
+      <con:testStep type="request" id="SearchBooks" name="Search Books">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>CatalogServiceInterface</con:interface>
+          <con:operation>searchBooks</con:operation>
+          <con:request name="SearchBooks-Success"/>
+        </con:config>
+      </con:testStep>
+      
+      <con:testStep type="request" id="GetBookById" name="Get Book By ID">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig">
+          <con:interface>CatalogServiceInterface</con:interface>
+          <con:operation>getBookById</con:operation>
+          <con:request name="GetBookById-Valid"/>
+        </con:config>
+      </con:testStep>
+      
+      <con:testStep type="request" id="GetPrice" name="Get Book Price">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig">
+          <con:interface>CatalogServiceInterface</con:interface>
+          <con:operation>getBookPrice</con:operation>
+          <con:request name="GetPrice-Valid"/>
+        </con:config>
+      </con:testStep>
+    </con:testCase>
+    
+    <con:testCase id="CatalogService-SecurityTest" name="Security Tests">
+      <con:testStep type="request" id="UnauthorizedAccess" name="Test Unauthorized Access">
+        <con:config xsi:type="con:RequestStepConfig">
+          <con:interface>CatalogServiceInterface</con:interface>
+          <con:operation>searchBooks</con:operation>
+          <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <cat:searchBooksRequest>
+         <cat:query>Java</cat:query>
+      </cat:searchBooksRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        </con:config>
+        <con:assertion type="SOAP Fault" id="SecurityFault">
+          <con:configuration>
+            <fault>*</fault>
+          </con:configuration>
+        </con:assertion>
+      </con:testStep>
+    </con:testCase>
+    
+  </con:testSuite>
+  
+  <!-- Load Test -->
+  <con:loadTest id="CatalogService-LoadTest" name="Catalog Service Load Test">
+    <con:settings>
+      <con:setting id="HttpSettings@close_connections">false</con:setting>
+    </con:settings>
+    <con:loadStrategy xsi:type="con:SimpleLoadStrategy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:testDelay>1000</con:testDelay>
+      <con:randomFactor>0.5</con:randomFactor>
+    </con:loadStrategy>
+    <con:assertions>
+      <con:assertion type="Max Errors" id="MaxErrors">
+        <con:configuration>
+          <maxErrors>5</maxErrors>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="Step Average" id="StepAverage">
+        <con:configuration>
+          <step>SearchBooks</step>
+          <maxAverage>1000</maxAverage>
+        </con:configuration>
+      </con:assertion>
+    </con:assertions>
+  </con:loadTest>
+  
+</con:soapui-project>

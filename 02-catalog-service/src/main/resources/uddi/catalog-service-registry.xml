@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- catalog-service-registry.xml - UDDI Registry Entry -->
+<uddi:save_business xmlns:uddi="urn:uddi-org:api_v3">
+    <uddi:authInfo>auth-token-placeholder</uddi:authInfo>
+    
+    <uddi:businessEntity businessKey="uddi:globalbooks.com:catalog">
+        <uddi:discoveryURLs>
+            <uddi:discoveryURL useType="businessEntity">
+                http://localhost:8080/catalog/discovery
+            </uddi:discoveryURL>
+        </uddi:discoveryURLs>
+        
+        <uddi:name xml:lang="en">GlobalBooks Catalog Service</uddi:name>
+        
+        <uddi:description xml:lang="en">
+            Book catalog management service providing search, pricing, 
+            and availability checking capabilities for GlobalBooks e-commerce platform.
+        </uddi:description>
+        
+        <uddi:contacts>
+            <uddi:contact useType="technical">
+                <uddi:description xml:lang="en">Technical Contact</uddi:description>
+                <uddi:personName>GlobalBooks SOA Team</uddi:personName>
+                <uddi:email>soa-team@globalbooks.com</uddi:email>
+                <uddi:phone useType="office">+1-555-0123</uddi:phone>
+            </uddi:contact>
+        </uddi:contacts>
+        
+        <uddi:businessServices>
+            <uddi:businessService serviceKey="uddi:globalbooks.com:catalog:service" 
+                                 businessKey="uddi:globalbooks.com:catalog">
+                
+                <uddi:name xml:lang="en">Catalog Management Service</uddi:name>
+                
+                <uddi:description xml:lang="en">
+                    SOAP-based service for book catalog operations including search,
+                    price retrieval, and stock availability checking.
+                </uddi:description>
+                
+                <uddi:bindingTemplates>
+                    <uddi:bindingTemplate bindingKey="uddi:globalbooks.com:catalog:binding:soap">
+                        
+                        <uddi:description xml:lang="en">
+                            SOAP 1.1 binding for Catalog Service operations
+                        </uddi:description>
+                        
+                        <uddi:accessPoint useType="endPoint">
+                            http://localhost:8080/catalog/soap
+                        </uddi:accessPoint>
+                        
+                        <uddi:tModelInstanceDetails>
+                            <uddi:tModelInstanceInfo tModelKey="uddi:uddi.org:wsdl:types">
+                                <uddi:description xml:lang="en">WSDL Document</uddi:description>
+                                <uddi:instanceDetails>
+                                    <uddi:instanceParms>
+                                        http://localhost:8080/catalog/soap?wsdl
+                                    </uddi:instanceParms>
+                                </uddi:instanceDetails>
+                            </uddi:tModelInstanceInfo>
+                            
+                            <uddi:tModelInstanceInfo tModelKey="uddi:uddi.org:protocol:soap">
+                                <uddi:description xml:lang="en">SOAP Protocol</uddi:description>
+                            </uddi:tModelInstanceInfo>
+                            
+                            <uddi:tModelInstanceInfo tModelKey="uddi:globalbooks.com:security:ws-security">
+                                <uddi:description xml:lang="en">WS-Security with UsernameToken</uddi:description>
+                                <uddi:instanceDetails>
+                                    <uddi:instanceParms>
+                                        SecurityPolicy: UsernameToken, Timestamp, Signature
+                                    </uddi:instanceParms>
+                                </uddi:instanceDetails>
+                            </uddi:tModelInstanceInfo>
+                        </uddi:tModelInstanceDetails>
+                        
+                    </uddi:bindingTemplate>
+                </uddi:bindingTemplates>
+                
+                <uddi:categoryBag>
+                    <uddi:keyedReference keyName="Service Type" 
+                                       keyValue="Catalog" 
+                                       tModelKey="uddi:globalbooks.com:servicetype"/>
+                    <uddi:keyedReference keyName="Industry" 
+                                       keyValue="E-commerce" 
+                                       tModelKey="uddi:uddi.org:general_keywords"/>
+                    <uddi:keyedReference keyName="Protocol" 
+                                       keyValue="SOAP" 
+                                       tModelKey="uddi:uddi.org:protocol"/>
+                    <uddi:keyedReference keyName="Security" 
+                                       keyValue="WS-Security" 
+                                       tModelKey="uddi:uddi.org:security"/>
+                </uddi:categoryBag>
+                
+            </uddi:businessService>
+        </uddi:businessServices>
+        
+        <uddi:categoryBag>
+            <uddi:keyedReference keyName="Business Type" 
+                               keyValue="E-commerce Platform" 
+                               tModelKey="uddi:uddi.org:general_keywords"/>
+            <uddi:keyedReference keyName="Industry Sector" 
+                               keyValue="Retail Books" 
+                               tModelKey="uddi:uddi.org:naics:2017:451211"/>
+        </uddi:categoryBag>
+        
+    </uddi:businessEntity>
+</uddi:save_business>
+
+<!-- UDDI tModel Definitions for Custom Categories -->
+<uddi:save_tModel xmlns:uddi="urn:uddi-org:api_v3">
+    <uddi:authInfo>auth-token-placeholder</uddi:authInfo>
+    
+    <uddi:tModel tModelKey="uddi:globalbooks.com:servicetype">
+        <uddi:name>GlobalBooks Service Types</uddi:name>
+        <uddi:description xml:lang="en">
+            Classification system for GlobalBooks SOA service types
+        </uddi:description>
+        <uddi:overviewDoc>
+            <uddi:description xml:lang="en">Service Type Taxonomy</uddi:description>
+            <uddi:overviewURL>
+                http://docs.globalbooks.com/soa/service-types
+            </uddi:overviewURL>
+        </uddi:overviewDoc>
+        <uddi:categoryBag>
+            <uddi:keyedReference keyName="Type" 
+                               keyValue="Taxonomy" 
+                               tModelKey="uddi:uddi.org:categorization:types"/>
+        </uddi:categoryBag>
+    </uddi:tModel>
+    
+    <uddi:tModel tModelKey="uddi:globalbooks.com:security:ws-security">
+        <uddi:name>GlobalBooks WS-Security Implementation</uddi:name>
+        <uddi:description xml:lang="en">
+            WS-Security implementation specifications for GlobalBooks services
+        </uddi:description>
+        <uddi:overviewDoc>
+            <uddi:description xml:lang="en">Security Implementation Guide</uddi:description>
+            <uddi:overviewURL>
+                http://docs.globalbooks.com/security/ws-security-guide
+            </uddi:overviewURL>
+        </uddi:overviewDoc>
+    </uddi:tModel>
+    
+</uddi:save_tModel>

@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "GlobalBooks SOA - Catalog Service",
+    "description": "SOAP Web Service testing for Catalog Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get WSDL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/catalog/soap/catalog.wsdl",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["catalog", "soap", "catalog.wsdl"]
+        }
+      }
+    },
+    {
+      "name": "Search Books",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "SOAPAction",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:cat=\"http://catalog.globalbooks.com/\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <cat:searchBooksRequest>\n         <query>Java</query>\n         <category>Programming</category>\n      </cat:searchBooksRequest>\n   </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "http://localhost:8080/catalog/soap",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["catalog", "soap"]
+        }
+      }
+    },
+    {
+      "name": "Get Book by ID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "SOAPAction",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:cat=\"http://catalog.globalbooks.com/\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <cat:getBookByIdRequest>\n         <bookId>978-0134685991</bookId>\n      </cat:getBookByIdRequest>\n   </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "http://localhost:8080/catalog/soap",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["catalog", "soap"]
+        }
+      }
+    },
+    {
+      "name": "Get Book Price",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "SOAPAction",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:cat=\"http://catalog.globalbooks.com/\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <cat:getBookPriceRequest>\n         <bookId>978-0134685991</bookId>\n      </cat:getBookPriceRequest>\n   </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "http://localhost:8080/catalog/soap",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["catalog", "soap"]
+        }
+      }
+    },
+    {
+      "name": "Check Availability",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "SOAPAction",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:cat=\"http://catalog.globalbooks.com/\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <cat:checkAvailabilityRequest>\n         <bookId>978-0134685991</bookId>\n         <quantity>5</quantity>\n      </cat:checkAvailabilityRequest>\n   </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "http://localhost:8080/catalog/soap",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["catalog", "soap"]
+        }
+      }
+    }
+  ]
+}

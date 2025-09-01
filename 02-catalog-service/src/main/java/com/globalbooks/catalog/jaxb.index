@@ -1,0 +1,9 @@
+Book
+CheckAvailabilityRequest
+CheckAvailabilityResponse
+GetBookByIdRequest
+GetBookByIdResponse
+GetBookPriceRequest
+GetBookPriceResponse
+SearchBooksRequest
+SearchBooksResponse

@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "Payments Service API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "health"]
+        }
+      }
+    },
+    {
+      "name": "Initiate Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/initiate?orderId=1&customerId=cust123&amount=100.0&paymentMethod=credit_card",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "initiate"],
+          "query": [
+            {"key": "orderId", "value": "1"},
+            {"key": "customerId", "value": "cust123"},
+            {"key": "amount", "value": "100.0"},
+            {"key": "paymentMethod", "value": "credit_card"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Process Payment",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/1/process",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "1", "process"]
+        }
+      }
+    },
+    {
+      "name": "Get Payment by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get Payments by Order ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/order/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "order", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get Payments by Customer ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/customer/cust123",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "customer", "cust123"]
+        }
+      }
+    },
+    {
+      "name": "Get Payments by Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments?status=PENDING",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments"],
+          "query": [
+            {"key": "status", "value": "PENDING"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Refund Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/1/refund?refundAmount=50.0",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "1", "refund"],
+          "query": [
+            {"key": "refundAmount", "value": "50.0"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cancel Payment",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8083/api/v1/payments/1/cancel",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8083",
+          "path": ["api", "v1", "payments", "1", "cancel"]
+        }
+      }
+    }
+  ]
+}
