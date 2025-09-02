@@ -1,0 +1,17 @@
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="3.0">
+  <!-- JAX-WS RI servlet -->
+  <servlet>
+    <servlet-name>JAXWSServlet</servlet-name>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>JAXWSServlet</servlet-name>
+    <url-pattern>/soap/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- optional listener for the RI to initialize endpoint registry -->
+  <listener>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+  </listener>
+</web-app>

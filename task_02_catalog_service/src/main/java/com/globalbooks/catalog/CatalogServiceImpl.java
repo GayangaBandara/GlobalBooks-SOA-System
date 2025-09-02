@@ -7,31 +7,30 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @WebService(endpointInterface = "com.globalbooks.catalog.CatalogService",
-           serviceName = "CatalogService",
-           targetNamespace = "http://catalog.globalbooks.com/")
+        serviceName = "CatalogService",
+        targetNamespace = "http://catalog.globalbooks.com/")
 public class CatalogServiceImpl implements CatalogService {
 
     private static final Map<String, Book> bookDatabase = new HashMap<>();
 
     static {
-        // Initialize sample data
-        bookDatabase.put("978-0134685991", new Book("978-0134685991",
-            "Effective Java", "Joshua Bloch", "Programming", 45.99, 100));
-        bookDatabase.put("978-0596007126", new Book("978-0596007126",
-            "Head First Design Patterns", "Eric Freeman", "Programming", 39.99, 75));
-        bookDatabase.put("978-0321356680", new Book("978-0321356680",
-            "Effective C++", "Scott Meyers", "Programming", 42.99, 50));
+        bookDatabase.put("978-1491904244", new Book("978-1491904244",
+                "Designing Data-Intensive Applications", "Martin Kleppmann", "Databases", 59.99, 150));
+        bookDatabase.put("978-0132350884", new Book("978-0132350884",
+                "Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", "Software Engineering", 49.99, 200));
+        bookDatabase.put("978-0201633610", new Book("978-0201633610",
+                "Design Patterns: Elements of Reusable Object-Oriented Software", "Erich Gamma", "Software Design", 54.99, 120));
     }
 
     @Override
     public List<Book> searchBooks(String query, String category) {
         return bookDatabase.values().stream()
-            .filter(book -> (query == null || book.getTitle().toLowerCase()
-                .contains(query.toLowerCase()) ||
-                book.getAuthor().toLowerCase().contains(query.toLowerCase())))
-            .filter(book -> (category == null || book.getCategory()
-                .equalsIgnoreCase(category)))
-            .collect(Collectors.toList());
+                .filter(book -> (query == null || book.getTitle().toLowerCase()
+                        .contains(query.toLowerCase()) ||
+                        book.getAuthor().toLowerCase().contains(query.toLowerCase())))
+                .filter(book -> (category == null || book.getCategory()
+                        .equalsIgnoreCase(category)))
+                .collect(Collectors.toList());
     }
 
     @Override
