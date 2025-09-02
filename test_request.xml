@@ -1,0 +1,1 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks.com/"><soapenv:Header/><soapenv:Body><cat:getBookByIdRequest><cat:bookId>978-1491904244</cat:bookId></cat:getBookByIdRequest></soapenv:Body></soapenv:Envelope> 

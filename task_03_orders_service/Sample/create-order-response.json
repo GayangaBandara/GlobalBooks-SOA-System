@@ -1,0 +1,20 @@
+{
+  "orderId": "ord-20250902-0001",
+  "customerId": "CUST123",
+  "items": [
+    { "productId": "978-1491904244", "quantity": 2, "unitPrice": 59.99, "lineTotal": 119.98 },
+    { "productId": "978-0132350884", "quantity": 1, "unitPrice": 49.99, "lineTotal": 49.99 }
+  ],
+  "shippingAddress": {
+    "name": "Jane Doe",
+    "line1": "123 Main St",
+    "city": "Seattle",
+    "state": "WA",
+    "postalCode": "98101",
+    "country": "US"
+  },
+  "currency": "USD",
+  "totalAmount": 169.97,
+  "status": "PENDING",
+  "createdAt": "2025-09-02T10:15:30Z"
+}

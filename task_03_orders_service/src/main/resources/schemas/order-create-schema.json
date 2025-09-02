@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrderCreate",
+  "type": "object",
+  "required": ["customerId", "items", "shippingAddress", "currency", "paymentMethod"],
+  "properties": {
+    "customerId": { "type": "string", "minLength": 1 },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["productId", "quantity"],
+        "properties": {
+          "productId": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 1 },
+          "unitPrice": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "shippingAddress": {
+      "type": "object",
+      "required": ["name", "line1", "city", "postalCode", "country"],
+      "properties": {
+        "name": { "type": "string" },
+        "line1": { "type": "string" },
+        "line2": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "postalCode": { "type": "string" },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" }
+      },
+      "additionalProperties": false
+    },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "paymentMethod": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["CARD", "PAYPAL", "INVOICE"] },
+        "token": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}
