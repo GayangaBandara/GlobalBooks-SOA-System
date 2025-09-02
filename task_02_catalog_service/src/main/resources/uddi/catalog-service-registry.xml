@@ -144,11 +144,11 @@
 
 <!-- UDDI v3 metadata snippet for CatalogService (register in UDDI registry) -->
 <tModels>
-  <tModel tModelKey="uddi:example.com:tm:CatalogService:WSDL">
+  <tModel tModelKey="uddi:acme.com:tm:CatalogService:WSDL:1.0">
     <name>CatalogService WSDL</name>
     <description>WSDL for CatalogService (document/literal SOAP 1.1)</description>
     <overviewDoc>
-      <overviewURL>http://catalog.example.com/soap?wsdl</overviewURL>
+      <overviewURL>http://localhost:8080/catalog-service/wsdl/CatalogService.wsdl</overviewURL>
     </overviewDoc>
     <categoryBag>
       <keyedReference tModelKey="uddi:uddi.org:categorization:types" keyName="interface" keyValue="WSDL"/>
@@ -156,53 +156,48 @@
   </tModel>
 </tModels>
 
-<businessEntity businessKey="uddi:example.com:business:CatalogProvider">
-  <name>Catalog Provider Inc.</name>
+<businessEntity businessKey="uddi:acme.com:business:acme-catalog">
+  <name>ACME Catalog Provider</name>
   <description>Provider of product catalog lookup and search services.</description>
 
-  <businessService serviceKey="uddi:example.com:service:CatalogService">
+  <businessService serviceKey="uddi:acme.com:service:catalog-service:v1">
     <name>CatalogService</name>
     <description>SOAP API for product catalog: GetCatalogItem, ListCatalogItems, SearchCatalog</description>
 
-    <!-- classification metadata to aid discovery -->
     <categoryBag>
-      <keyedReference tModelKey="uddi:example.com:tm:serviceType" keyName="service-type" keyValue="catalog"/>
-      <keyedReference tModelKey="uddi:example.com:tm:protocol" keyName="protocol" keyValue="SOAP1.1"/>
-      <keyedReference tModelKey="uddi:example.com:tm:apiVersion" keyName="version" keyValue="1.0.0"/>
-      <keyedReference tModelKey="uddi:example.com:tm:businessDomain" keyName="domain" keyValue="ecommerce"/>
-      <keyedReference tModelKey="uddi:example.com:tm:quality" keyName="availability" keyValue="SL1"/>
+      <keyedReference tModelKey="uddi:acme.com:tm:serviceType" keyName="service-type" keyValue="catalog"/>
+      <keyedReference tModelKey="uddi:acme.com:tm:protocol" keyName="protocol" keyValue="SOAP1.1"/>
+      <keyedReference tModelKey="uddi:acme.com:tm:apiVersion" keyName="version" keyValue="1.0.0"/>
+      <keyedReference tModelKey="uddi:acme.com:tm:businessDomain" keyName="domain" keyValue="ecommerce"/>
     </categoryBag>
 
     <bindingTemplates>
       <bindingTemplate>
         <description>WSDL binding (document/literal, SOAP 1.1)</description>
 
-        <!-- Access point of the WSDL (useType wsdlDeployment signals WSDL location) -->
-        <accessPoint useType="wsdlDeployment">http://catalog.example.com/soap?wsdl</accessPoint>
+        <!-- WSDL location (wsdlDeployment) -->
+        <accessPoint useType="wsdlDeployment">http://localhost:8080/catalog-service/wsdl/CatalogService.wsdl</accessPoint>
 
-        <!-- reference the WSDL tModel -->
+        <!-- actual service endpoint -->
         <tModelInstanceDetails>
-          <tModelInstanceInfo tModelKey="uddi:example.com:tm:CatalogService:WSDL">
-            <description>WSDL descriptor</description>
+          <tModelInstanceInfo tModelKey="uddi:acme.com:tm:CatalogService:WSDL:1.0">
             <instanceDetails>
               <overviewDoc>
-                <overviewURL>http://catalog.example.com/soap?wsdl</overviewURL>
+                <overviewURL>http://localhost:8080/catalog-service/wsdl/CatalogService.wsdl</overviewURL>
               </overviewDoc>
             </instanceDetails>
           </tModelInstanceInfo>
         </tModelInstanceDetails>
 
-        <!-- Optional: technical contact and healthcheck endpoint -->
         <hostingRedirector>
-          <accessPoint useType="endpoint">http://catalog.example.com/soap</accessPoint>
+          <accessPoint useType="endpoint">http://localhost:8080/catalog-service/soap</accessPoint>
         </hostingRedirector>
       </bindingTemplate>
     </bindingTemplates>
 
-    <!-- optional contact and support metadata -->
     <serviceInfo>
-      <description>Health check: http://catalog.example.com/health</description>
-      <description>Support: infra-team@example.com</description>
+      <description>Health check: http://localhost:8080/catalog-service/health</description>
+      <description>Support: infra-team@acme.com</description>
     </serviceInfo>
   </businessService>
 </businessEntity>
