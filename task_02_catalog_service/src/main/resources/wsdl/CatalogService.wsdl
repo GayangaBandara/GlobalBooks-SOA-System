@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    name="CatalogService"
+    targetNamespace="http://example.com/catalog"
+    xmlns:tns="http://example.com/catalog"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+  <!-- Types -->
+  <types>
+    <xsd:schema targetNamespace="http://example.com/catalog" elementFormDefault="qualified">
+      <xsd:complexType name="CatalogItem">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:string"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="price" type="xsd:decimal"/>
+          <xsd:element name="available" type="xsd:boolean"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="GetCatalogItemRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="GetCatalogItemResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="item" type="tns:CatalogItem" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="ListCatalogItemsRequest">
+        <xsd:complexType/>
+      </xsd:element>
+
+      <xsd:element name="ListCatalogItemsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="items" type="tns:CatalogItem" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="SearchCatalogRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="query" type="xsd:string"/>
+            <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="SearchCatalogResponse" type="tns:ListCatalogItemsResponse"/>
+    </xsd:schema>
+  </types>
+
+  <!-- Port type (operations) -->
+  <wsdl:portType name="CatalogPortType">
+    <wsdl:operation name="GetCatalogItem">
+      <wsdl:input message="tns:GetCatalogItemRequest"/>
+      <wsdl:output message="tns:GetCatalogItemResponse"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ListCatalogItems">
+      <wsdl:input message="tns:ListCatalogItemsRequest"/>
+      <wsdl:output message="tns:ListCatalogItemsResponse"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="SearchCatalog">
+      <wsdl:input message="tns:SearchCatalogRequest"/>
+      <wsdl:output message="tns:SearchCatalogResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <!-- Messages (wrapper style using elements defined in types) -->
+  <wsdl:message name="GetCatalogItemRequest">
+    <wsdl:part name="parameters" element="tns:GetCatalogItemRequest"/>
+  </wsdl:message>
+  <wsdl:message name="GetCatalogItemResponse">
+    <wsdl:part name="parameters" element="tns:GetCatalogItemResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="ListCatalogItemsRequest">
+    <wsdl:part name="parameters" element="tns:ListCatalogItemsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="ListCatalogItemsResponse">
+    <wsdl:part name="parameters" element="tns:ListCatalogItemsResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="SearchCatalogRequest">
+    <wsdl:part name="parameters" element="tns:SearchCatalogRequest"/>
+  </wsdl:message>
+  <wsdl:message name="SearchCatalogResponse">
+    <wsdl:part name="parameters" element="tns:SearchCatalogResponse"/>
+  </wsdl:message>
+
+  <!-- Binding (SOAP 1.1, document/literal wrapped) -->
+  <wsdl:binding name="CatalogSoapBinding" type="tns:CatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetCatalogItem">
+      <soap:operation soapAction="urn:GetCatalogItem" />
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ListCatalogItems">
+      <soap:operation soapAction="urn:ListCatalogItems" />
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SearchCatalog">
+      <soap:operation soapAction="urn:SearchCatalog" />
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <!-- Service + Port -->
+  <wsdl:service name="CatalogService">
+    <wsdl:port name="CatalogPort" binding="tns:CatalogSoapBinding">
+      <soap:address location="http://catalog.example.com/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</definitions>

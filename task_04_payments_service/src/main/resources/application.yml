@@ -3,9 +3,9 @@ server:
 
 spring:
   application:
-    name: orders-service
+    name: payments-service
   datasource:
-    url: jdbc:h2:mem:ordersdb
+    url: jdbc:h2:mem:paymentsdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -29,7 +29,7 @@ spring:
 
 logging:
   level:
-    com.globalbooks.orders: DEBUG
+    com.globalbooks.payments: DEBUG
     org.springframework.web: DEBUG
 
 management:

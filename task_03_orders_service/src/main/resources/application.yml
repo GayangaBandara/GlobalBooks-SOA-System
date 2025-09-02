@@ -1,11 +1,11 @@
 server:
-  port: 8084
+  port: 8081
 
 spring:
   application:
-    name: payments-service
+    name: orders-service
   datasource:
-    url: jdbc:h2:mem:paymentsdb
+    url: jdbc:h2:mem:ordersdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -29,7 +29,7 @@ spring:
 
 logging:
   level:
-    com.globalbooks.payments: DEBUG
+    com.globalbooks.orders: DEBUG
     org.springframework.web: DEBUG
 
 management:

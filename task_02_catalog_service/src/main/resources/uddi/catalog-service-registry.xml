@@ -141,3 +141,68 @@
     </uddi:tModel>
     
 </uddi:save_tModel>
+
+<!-- UDDI v3 metadata snippet for CatalogService (register in UDDI registry) -->
+<tModels>
+  <tModel tModelKey="uddi:example.com:tm:CatalogService:WSDL">
+    <name>CatalogService WSDL</name>
+    <description>WSDL for CatalogService (document/literal SOAP 1.1)</description>
+    <overviewDoc>
+      <overviewURL>http://catalog.example.com/soap?wsdl</overviewURL>
+    </overviewDoc>
+    <categoryBag>
+      <keyedReference tModelKey="uddi:uddi.org:categorization:types" keyName="interface" keyValue="WSDL"/>
+    </categoryBag>
+  </tModel>
+</tModels>
+
+<businessEntity businessKey="uddi:example.com:business:CatalogProvider">
+  <name>Catalog Provider Inc.</name>
+  <description>Provider of product catalog lookup and search services.</description>
+
+  <businessService serviceKey="uddi:example.com:service:CatalogService">
+    <name>CatalogService</name>
+    <description>SOAP API for product catalog: GetCatalogItem, ListCatalogItems, SearchCatalog</description>
+
+    <!-- classification metadata to aid discovery -->
+    <categoryBag>
+      <keyedReference tModelKey="uddi:example.com:tm:serviceType" keyName="service-type" keyValue="catalog"/>
+      <keyedReference tModelKey="uddi:example.com:tm:protocol" keyName="protocol" keyValue="SOAP1.1"/>
+      <keyedReference tModelKey="uddi:example.com:tm:apiVersion" keyName="version" keyValue="1.0.0"/>
+      <keyedReference tModelKey="uddi:example.com:tm:businessDomain" keyName="domain" keyValue="ecommerce"/>
+      <keyedReference tModelKey="uddi:example.com:tm:quality" keyName="availability" keyValue="SL1"/>
+    </categoryBag>
+
+    <bindingTemplates>
+      <bindingTemplate>
+        <description>WSDL binding (document/literal, SOAP 1.1)</description>
+
+        <!-- Access point of the WSDL (useType wsdlDeployment signals WSDL location) -->
+        <accessPoint useType="wsdlDeployment">http://catalog.example.com/soap?wsdl</accessPoint>
+
+        <!-- reference the WSDL tModel -->
+        <tModelInstanceDetails>
+          <tModelInstanceInfo tModelKey="uddi:example.com:tm:CatalogService:WSDL">
+            <description>WSDL descriptor</description>
+            <instanceDetails>
+              <overviewDoc>
+                <overviewURL>http://catalog.example.com/soap?wsdl</overviewURL>
+              </overviewDoc>
+            </instanceDetails>
+          </tModelInstanceInfo>
+        </tModelInstanceDetails>
+
+        <!-- Optional: technical contact and healthcheck endpoint -->
+        <hostingRedirector>
+          <accessPoint useType="endpoint">http://catalog.example.com/soap</accessPoint>
+        </hostingRedirector>
+      </bindingTemplate>
+    </bindingTemplates>
+
+    <!-- optional contact and support metadata -->
+    <serviceInfo>
+      <description>Health check: http://catalog.example.com/health</description>
+      <description>Support: infra-team@example.com</description>
+    </serviceInfo>
+  </businessService>
+</businessEntity>

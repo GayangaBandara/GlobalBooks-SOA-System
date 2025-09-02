@@ -22,7 +22,7 @@ services:
   # Catalog Service (SOAP)
   catalog-service:
     build:
-      context: E:/PROJECT/java_project/test_1/SOA/02-catalog-service
+      context: E:/PROJECT/java_project/test_1/SOA/task_02_catalog_service
       dockerfile: Dockerfile
     container_name: globalbooks-catalog
     ports:
@@ -38,11 +38,11 @@ services:
   # Orders Service (REST)
   orders-service:
     build:
-      context: E:/PROJECT/java_project/test_1/SOA/03-orders-service
+      context: E:/PROJECT/java_project/test_1/SOA/task_03_orders_service
       dockerfile: Dockerfile
     container_name: globalbooks-orders
     ports:
-      - "8082:8082"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_RABBITMQ_HOST=rabbitmq
@@ -61,7 +61,7 @@ services:
   # Payments Service
   payments-service:
     build:
-      context: E:/PROJECT/java_project/test_1/SOA/04-payments-service
+      context: E:/PROJECT/java_project/test_1/SOA/task_04_payments_service
       dockerfile: Dockerfile
     container_name: globalbooks-payments
     ports:
@@ -81,7 +81,7 @@ services:
   # Shipping Service
   shipping-service:
     build:
-      context: E:/PROJECT/java_project/test_1/SOA/05-shipping-service
+      context: E:/PROJECT/java_project/test_1/SOA/task_05_shipping_service
       dockerfile: Dockerfile
     container_name: globalbooks-shipping
     ports:
