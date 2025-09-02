@@ -98,6 +98,28 @@ services:
     networks:
       - globalbooks-network
 
+  # Apache Camel Orchestration Service
+  camel-orchestration:
+    build:
+      context: ../task_06_camel_orchestration
+      dockerfile: Dockerfile
+    container_name: globalbooks-camel-orchestration
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CATALOG_SERVICE_URL=http://catalog-service:8080
+      - ORDERS_SERVICE_URL=http://orders-service:8081
+      - PAYMENTS_SERVICE_URL=http://payments-service:8083
+      - SHIPPING_SERVICE_URL=http://shipping-service:8084
+    depends_on:
+      - catalog-service
+      - orders-service
+      - payments-service
+      - shipping-service
+    networks:
+      - globalbooks-network
+
   # Keycloak OAuth2 Server (Optional)
   keycloak:
     image: quay.io/keycloak/keycloak:22.0

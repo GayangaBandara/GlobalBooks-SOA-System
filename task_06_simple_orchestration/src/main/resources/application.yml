@@ -1,0 +1,21 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: simple-orchestration-service
+
+logging:
+  level:
+    com.globalbooks: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized

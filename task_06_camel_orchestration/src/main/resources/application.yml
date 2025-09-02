@@ -1,0 +1,37 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: camel-orchestration-service
+
+camel:
+  springboot:
+    main-run-controller: true
+
+logging:
+  level:
+    org.apache.camel: INFO
+    com.globalbooks: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,camelroutes,camelroutecontroller
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Service endpoints
+service:
+  catalog:
+    url: http://localhost:8080
+  orders:
+    url: http://localhost:8081
+  payments:
+    url: http://localhost:8083
+  shipping:
+    url: http://localhost:8084

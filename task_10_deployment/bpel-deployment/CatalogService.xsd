@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://catalog.globalbooks.com/"
+            targetNamespace="http://catalog.globalbooks.com/"
+            elementFormDefault="qualified">
+
+    <!-- Book Complex Type -->
+    <xsd:complexType name="Book">
+        <xsd:sequence>
+            <xsd:element name="isbn" type="xsd:string"/>
+            <xsd:element name="title" type="xsd:string"/>
+            <xsd:element name="author" type="xsd:string"/>
+            <xsd:element name="category" type="xsd:string"/>
+            <xsd:element name="price" type="xsd:double"/>
+            <xsd:element name="stock" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Search Books Request -->
+    <xsd:element name="searchBooksRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="query" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="category" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Search Books Response -->
+    <xsd:element name="searchBooksResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="books" type="tns:Book" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Get Book By ID Request -->
+    <xsd:element name="getBookByIdRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="bookId" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Get Book By ID Response -->
+    <xsd:element name="getBookByIdResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="book" type="tns:Book"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Get Book Price Request -->
+    <xsd:element name="getBookPriceRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="bookId" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Get Book Price Response -->
+    <xsd:element name="getBookPriceResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="price" type="xsd:double"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Check Availability Request -->
+    <xsd:element name="checkAvailabilityRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="bookId" type="xsd:string"/>
+                <xsd:element name="quantity" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- Check Availability Response -->
+    <xsd:element name="checkAvailabilityResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="available" type="xsd:boolean"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
