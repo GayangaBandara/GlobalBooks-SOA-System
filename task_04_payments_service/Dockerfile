@@ -14,11 +14,11 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Expose port
-EXPOSE 8082
+EXPOSE 8083
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8082/api/v1/payments/health || exit 1
+  CMD curl -f http://localhost:8083/api/v1/payments/health || exit 1
 
 # Run the application
 CMD ["java", "-jar", "app.jar"]
