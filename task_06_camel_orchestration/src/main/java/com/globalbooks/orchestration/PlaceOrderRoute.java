@@ -2,7 +2,7 @@ package main.java.com.globalbooks.orchestration;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.support.builder.Namespaces;
+import org.apache.camel.builder.xml.XPathBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,8 +10,7 @@ public class PlaceOrderRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        // Define namespaces
-        Namespaces ns = new Namespaces("ord", "http://bpel.globalbooks.com/");
+        namespaces().add("ord", "http://bpel.globalbooks.com/");
 
         // Main orchestration route - SOAP endpoint
         from("cxf:bean:placeOrderEndpoint")
@@ -20,20 +19,20 @@ public class PlaceOrderRoute extends RouteBuilder {
             .log("Received order request: ${body}")
 
             // Extract order data from SOAP envelope
-            .setProperty("customerId", xpath("//ord:customerId/text()", String.class, ns))
-            .setProperty("orderItems", xpath("//ord:orderItems", String.class, ns))
-            .setProperty("shippingAddress", xpath("//ord:shippingAddress", String.class, ns))
-            .setProperty("paymentMethod", xpath("//ord:paymentMethod/text()", String.class, ns))
+            .setProperty("customerId", xpath("//ord:customerId/text()", String.class))
+            .setProperty("orderItems", xpath("//ord:orderItems", String.class))
+            .setProperty("shippingAddress", xpath("//ord:shippingAddress", String.class))
+            .setProperty("paymentMethod", xpath("//ord:paymentMethod/text()", String.class))
 
             // Initialize total amount
             .setProperty("totalAmount", constant(0.0))
             .setProperty("currentItem", constant(0))
 
             // Process each order item
-            .loop(xpath("count(//ord:item)", Integer.class, ns))
+            .loop(xpath("count(//ord:item)", Integer.class))
                 .setProperty("currentItem", simple("${exchangeProperty.currentItem} + 1"))
-                .setProperty("bookId", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:bookId/text()", String.class, ns))
-                .setProperty("quantity", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:quantity/text()", Integer.class, ns))
+                .setProperty("bookId", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:bookId/text()", String.class))
+                .setProperty("quantity", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:quantity/text()", Integer.class))
 
                 // Call Catalog Service to get book price
                 .to("direct:getBookPrice")
