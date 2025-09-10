@@ -27,6 +27,14 @@ spring:
     password: guest
     virtual-host: /
 
+  # OAuth2 Resource Server Configuration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/globalbooks
+          jwk-set-uri: http://localhost:8080/realms/globalbooks/protocol/openid-connect/certs
+
 logging:
   level:
     com.globalbooks.orders: DEBUG
@@ -40,12 +48,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-# OAuth2 Resource Server Configuration
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/globalbooks
-          jwk-set-uri: http://localhost:8080/realms/globalbooks/protocol/openid-connect/certs

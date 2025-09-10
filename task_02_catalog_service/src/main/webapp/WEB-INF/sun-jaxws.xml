@@ -2,6 +2,6 @@
            version="2.0">
   <endpoint
       name="CatalogService"
-      implementation="com.acme.catalog.CatalogEndpoint"
+      implementation="com.globalbooks.catalog.CatalogEndpoint"
       url-pattern="/soap/CatalogService"/>
 </endpoints>

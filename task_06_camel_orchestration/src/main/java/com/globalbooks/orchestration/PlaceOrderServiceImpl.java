@@ -1,4 +1,4 @@
-package main.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import org.springframework.stereotype.Service;
 
@@ -8,7 +8,7 @@ import javax.jws.WebService;
     serviceName = "PlaceOrderService",
     portName = "PlaceOrderPort",
     targetNamespace = "http://bpel.globalbooks.com/",
-    endpointInterface = "main.java.com.globalbooks.orchestration.PlaceOrderService"
+    endpointInterface = "com.globalbooks.orchestration.PlaceOrderService"
 )
 @Service
 public class PlaceOrderServiceImpl implements PlaceOrderService {

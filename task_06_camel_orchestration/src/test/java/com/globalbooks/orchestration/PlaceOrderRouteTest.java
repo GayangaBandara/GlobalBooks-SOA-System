@@ -1,4 +1,4 @@
-package test.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;

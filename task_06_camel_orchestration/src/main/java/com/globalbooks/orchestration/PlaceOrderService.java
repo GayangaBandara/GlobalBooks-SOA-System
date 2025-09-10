@@ -1,4 +1,4 @@
-package main.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

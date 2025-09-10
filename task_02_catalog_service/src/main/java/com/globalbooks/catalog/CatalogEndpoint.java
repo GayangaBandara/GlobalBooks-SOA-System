@@ -5,7 +5,6 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import java.util.List;
 
 @Endpoint
@@ -16,7 +15,7 @@ public class CatalogEndpoint {
     @Autowired
     private CatalogService catalogService;
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "searchBooksRequest")
+    @PayloadRoot(namespace = "http://catalog.globalbooks.com/", localPart = "searchBooksRequest")
     @ResponsePayload
     public SearchBooksResponse searchBooks(@RequestPayload SearchBooksRequest request) {
         List<Book> books = catalogService.searchBooks(request.getQuery(), request.getCategory());
@@ -25,7 +24,7 @@ public class CatalogEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getBookByIdRequest")
+    @PayloadRoot(namespace = "http://catalog.globalbooks.com/", localPart = "getBookByIdRequest")
     @ResponsePayload
     public GetBookByIdResponse getBookById(@RequestPayload GetBookByIdRequest request) {
         Book book = catalogService.getBookById(request.getBookId());
@@ -34,7 +33,7 @@ public class CatalogEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getBookPriceRequest")
+    @PayloadRoot(namespace = "http://catalog.globalbooks.com/", localPart = "getBookPriceRequest")
     @ResponsePayload
     public GetBookPriceResponse getBookPrice(@RequestPayload GetBookPriceRequest request) {
         double price = catalogService.getBookPrice(request.getBookId());
@@ -43,7 +42,7 @@ public class CatalogEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "checkAvailabilityRequest")
+    @PayloadRoot(namespace = "http://catalog.globalbooks.com/", localPart = "checkAvailabilityRequest")
     @ResponsePayload
     public CheckAvailabilityResponse checkAvailability(@RequestPayload CheckAvailabilityRequest request) {
         boolean available = catalogService.checkAvailability(request.getBookId(), request.getQuantity());

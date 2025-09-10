@@ -1,4 +1,4 @@
-package main.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import jakarta.xml.bind.annotation.*;
 import java.math.BigDecimal;

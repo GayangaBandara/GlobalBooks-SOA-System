@@ -11,11 +11,17 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/catalog/soap/catalog.wsdl",
+          "raw": "http://localhost:8080/catalog/soap?wsdl",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["catalog", "soap", "catalog.wsdl"]
+          "path": ["catalog", "soap"],
+          "query": [
+            {
+              "key": "wsdl",
+              "value": ""
+            }
+          ]
         }
       }
     },

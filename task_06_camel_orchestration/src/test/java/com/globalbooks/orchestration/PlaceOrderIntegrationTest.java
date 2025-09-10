@@ -1,4 +1,4 @@
-package test.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;

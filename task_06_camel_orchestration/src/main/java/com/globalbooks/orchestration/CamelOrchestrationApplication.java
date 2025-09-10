@@ -1,4 +1,4 @@
-package main.java.com.globalbooks.orchestration;
+package com.globalbooks.orchestration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
