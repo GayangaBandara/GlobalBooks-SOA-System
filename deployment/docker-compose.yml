@@ -1,0 +1,161 @@
+services:
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: globalbooks-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - globalbooks-network
+
+  # Catalog Service (SOAP)
+  catalog-service:
+    build:
+      context: ../services/catalog-service
+      dockerfile: Dockerfile
+    container_name: globalbooks-catalog
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - globalbooks-network
+
+  # Orders Service (REST)
+  orders-service:
+    build:
+      context: ../services/orders-service
+      dockerfile: Dockerfile
+    container_name: globalbooks-orders
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=password123
+      - CATALOG_SERVICE_URL=http://catalog-service:8080/soap
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      catalog-service:
+        condition: service_started
+    networks:
+      - globalbooks-network
+
+  # Payments Service
+  payments-service:
+    build:
+      context: ../services/payments-service
+      dockerfile: Dockerfile
+    container_name: globalbooks-payments
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=password123
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - globalbooks-network
+
+  # Shipping Service
+  shipping-service:
+    build:
+      context: ../services/shipping-service
+      dockerfile: Dockerfile
+    container_name: globalbooks-shipping
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=password123
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - globalbooks-network
+
+  # Apache Camel Orchestration Service
+  camel-orchestration:
+    build:
+      context: ../services/orchestration/camel
+      dockerfile: Dockerfile
+    container_name: globalbooks-camel-orchestration
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CATALOG_SERVICE_URL=http://catalog-service:8080
+      - ORDERS_SERVICE_URL=http://orders-service:8081
+      - PAYMENTS_SERVICE_URL=http://payments-service:8083
+      - SHIPPING_SERVICE_URL=http://shipping-service:8084
+    depends_on:
+      - catalog-service
+      - orders-service
+      - payments-service
+      - shipping-service
+    networks:
+      - globalbooks-network
+
+  # Keycloak OAuth2 Server (Optional)
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: globalbooks-keycloak
+    ports:
+      - "9000:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+    depends_on:
+      - postgres
+    command: start-dev
+    networks:
+      - globalbooks-network
+
+  # PostgreSQL for Keycloak
+  postgres:
+    image: postgres:15-alpine
+    container_name: globalbooks-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - globalbooks-network
+
+volumes:
+  rabbitmq_data:
+  postgres_data:
+
+networks:
+  globalbooks-network:
+    driver: bridge

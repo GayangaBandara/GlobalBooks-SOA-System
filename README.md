@@ -355,67 +355,54 @@ Kubernetes manifests available in `10-deployment/kubernetes/`
 ## Project Structure
 
 ```
-├── 01-design-artifacts/          # Architecture and Design Documentation
-│   ├── architecture-diagrams/    # System architecture visuals
-│   ├── governance-policy.md      # SOA governance guidelines
-│   └── soa-design-document.md    # Detailed design specifications
-│
-├── 02-catalog-service/           # SOAP-based Catalog Service
-│   ├── src/                      # Service source code
-│   ├── Dockerfile               # Container configuration
-│   └── pom.xml                  # Maven configuration
-│
-├── 03-orders-service/           # REST-based Orders Service
-│   ├── src/                     # Service implementation
-│   ├── Dockerfile              # Container configuration
-│   └── pom.xml                 # Maven build config
-│
-├── 04-payments-service/         # Payment Processing Service
-│   ├── src/                    # Service implementation
-│   ├── Dockerfile             # Container configuration
-│   └── pom.xml                # Maven build config
-│
-├── 05-shipping-service/        # Shipping Management Service
-│   ├── src/                   # Service implementation
-│   ├── Dockerfile            # Container configuration
-│   └── pom.xml               # Maven build config
-│
-├── 06-bpel-orchestration/     # Business Process Orchestration
-│   ├── deployment/           # BPEL deployment configs
-│   ├── processes/           # BPEL process definitions
-│   └── wsdl/               # Service WSDL files
-│
-├── 07-integration/          # Integration Components
-│   ├── consumers/          # Message consumers
-│   ├── producers/          # Event producers
-│   └── rabbitmq/          # Message broker configs
-│
-├── 08-security/           # Security Configurations
-│   ├── certificates/      # SSL/TLS certificates
-│   ├── oauth2/           # OAuth2 configurations
-│   └── ws-security/      # WS-Security settings
-│
-├── 09-testing/           # Testing Resources
-│   ├── integration-tests/# Integration test suites
-│   ├── performance/      # Performance test scripts
-│   ├── postman/         # API test collections
-│   └── soap-ui/         # SOAP service tests
-│
-├── 10-deployment/        # Deployment Configurations
-│   ├── docker-compose.yml # Local deployment
-│   ├── kubernetes/      # K8s manifests
-│   ├── cloud/          # Cloud-specific configs
-│   └── scripts/        # Deployment automation
-│
-├── 11-documentation/    # System Documentation
-│   └── api-docs/       # API specifications
-│
-├── 12-reports/         # Project Reports
-│   └── viva-presentation/ # Project presentations
-│
-└── 13-scripts/         # Utility Scripts
-    ├── setup-environment.sh # Environment setup
-    └── test-soa-workflow.sh # Workflow testing
+├── pom.xml                     # Parent POM for multi-module Maven setup
+├── common/                     # Shared utilities and common code
+│   ├── pom.xml
+│   └── src/
+├── design-artifacts/           # Architecture and Design Documentation
+│   ├── architecture-diagrams/  # System architecture visuals
+│   ├── governance-policy.md    # SOA governance guidelines
+│   └── soa-design-document.md  # Detailed design specifications
+├── services/                   # All microservices
+│   ├── catalog-service/        # SOAP-based Catalog Service
+│   │   ├── src/                # Service source code
+│   │   ├── Dockerfile         # Container configuration
+│   │   └── pom.xml            # Maven configuration
+│   ├── orders-service/         # REST-based Orders Service
+│   │   ├── src/               # Service implementation
+│   │   ├── Dockerfile        # Container configuration
+│   │   └── pom.xml           # Maven build config
+│   ├── payments-service/       # Payment Processing Service
+│   │   ├── src/              # Service implementation
+│   │   ├── Dockerfile       # Container configuration
+│   │   └── pom.xml          # Maven build config
+│   ├── shipping-service/      # Shipping Management Service
+│   │   ├── src/             # Service implementation
+│   │   ├── Dockerfile      # Container configuration
+│   │   └── pom.xml         # Maven build config
+│   └── orchestration/        # Orchestration services
+│       ├── bpel/            # BPEL orchestration
+│       ├── camel/           # Apache Camel orchestration
+│       └── simple/          # Simple orchestration
+├── integration/               # Integration Components
+│   ├── producers/           # Event producers
+│   └── consumers/           # Message consumers
+├── security/                  # Security Configurations
+│   ├── oauth2/              # OAuth2 configurations
+│   └── configs/             # Security settings
+├── testing/                   # Testing Resources
+│   ├── postman/             # API test collections
+│   ├── soap-ui/             # SOAP service tests
+│   └── integration-tests/   # Integration test suites
+├── deployment/                # Deployment Configurations
+│   ├── docker-compose.yml   # Local deployment
+│   ├── scripts/            # Deployment automation
+│   └── bpel-deployment/    # BPEL-specific deployment
+├── documentation/             # System Documentation
+│   └── api-docs/           # API specifications
+└── scripts/                   # Utility Scripts
+    ├── build.sh             # Build scripts
+    └── deploy.sh            # Deployment scripts
 ```
 
 Each directory contains a dedicated README with specific setup instructions and additional details.

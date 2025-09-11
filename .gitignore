@@ -87,8 +87,8 @@ rabbitmq/*
 docker-compose.override.yml
 
 # BPEL temporary files
-06-bpel-orchestration/**/tmp/
-06-bpel-orchestration/**/temp/
+services/orchestration/bpel/**/tmp/
+services/orchestration/bpel/**/temp/
 
 # Security sensitive files
 08-security/certificates/**
