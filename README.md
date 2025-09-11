@@ -26,7 +26,7 @@ A modern, scalable Service-Oriented Architecture (SOA) implementation for an ent
      * Inventory synchronization
    - Integration: Exposes WSDL for service discovery
 
-2. **Orders Service (REST)** - Port 8082
+2. **Orders Service (REST)** - Port 8081
     - Technology: Java Spring Boot
     - Protocol: REST with OAuth2
     - Features:
@@ -79,7 +79,7 @@ A modern, scalable Service-Oriented Architecture (SOA) implementation for an ent
 ## System Requirements
 
 ### Development Environment
-- Java Development Kit (JDK) 11 or higher
+- Java Development Kit (JDK) 17 or higher
 - Maven 3.6+
 - Docker Engine 20.10+
 - Docker Compose 2.0+
@@ -126,11 +126,11 @@ A modern, scalable Service-Oriented Architecture (SOA) implementation for an ent
    ```
 
    Or check individual endpoints:
-   - Catalog Service: http://localhost:8080/soap/catalog?wsdl
-   - Orders API: http://localhost:8082/api/v1/orders/health
+   - Catalog Service: http://localhost:8080/ws/catalog.wsdl
+   - Orders API: http://localhost:8081/api/v1/orders/health
    - Payments API: http://localhost:8083/api/v1/payments/health
    - Shipping API: http://localhost:8084/api/v1/shippings/health
-   - RabbitMQ Dashboard: http://localhost:15672 
+   - RabbitMQ Dashboard: http://localhost:15672
      * Username: admin
      * Password: password123
 
@@ -174,7 +174,7 @@ GET    /api/v1/shippings/health          # Health check
 
 ### Catalog Service (SOAP)
 
-WSDL available at: http://localhost:8080/soap/catalog?wsdl
+WSDL available at: http://localhost:8080/ws/catalog.wsdl
 
 Operations:
 - `searchBooks` - Search books by query and category
@@ -217,12 +217,12 @@ Operations:
 
 1. **Install Required Tools**
    ```bash
-   # Verify Java 11+ installation
+   # Verify Java 17+ installation
    java -version
-   
+
    # Verify Maven 3.6+
    mvn -version
-   
+
    # Verify Docker
    docker --version
    docker-compose --version
@@ -239,46 +239,46 @@ Operations:
 
 ```bash
 # Catalog Service
-cd 02-catalog-service
+cd services/catalog-service
 mvn clean package
 
 # Orders Service
-cd 03-orders-service
+cd services/orders-service
 mvn clean package
 
 # Payments Service
-cd 04-payments-service
+cd services/payments-service
 mvn clean package
 
 # Shipping Service
-cd 05-shipping-service
+cd services/shipping-service
 mvn clean package
 ```
 
 ### Running Services Locally
    ```bash
    # Catalog Service (Port 8080)
-   cd 02-catalog-service
+   cd services/catalog-service
    mvn spring-boot:run
 
-   # Orders Service (Port 8082)
-   cd 03-orders-service
+   # Orders Service (Port 8083)
+   cd services/orders-service
    mvn spring-boot:run
 
    # Payments Service (Port 8083)
-   cd 04-payments-service
+   cd services/payments-service
    mvn spring-boot:run
 
    # Shipping Service (Port 8084)
-   cd 05-shipping-service
+   cd services/shipping-service
    mvn spring-boot:run
    ```
 
 3. **Verify Services**
    ```bash
    # Check health endpoints
-   curl http://localhost:8080/soap/catalog?wsdl
-   curl http://localhost:8082/api/v1/orders/health
+   curl http://localhost:8080/ws/catalog.wsdl
+   curl http://localhost:8081/api/v1/orders/health
    curl http://localhost:8083/api/v1/payments/health
    curl http://localhost:8084/api/v1/shippings/health
    ```
@@ -342,8 +342,8 @@ Kubernetes manifests available in `10-deployment/kubernetes/`
 
 ## Technologies Used
 
-- **Java 11** - Primary programming language
-- **Spring Boot** - Application framework
+- **Java 17** - Primary programming language
+- **Spring Boot 3.2.0** - Application framework
 - **Spring Web Services** - SOAP implementation
 - **RabbitMQ** - Message broker
 - **Docker** - Containerization
@@ -351,6 +351,7 @@ Kubernetes manifests available in `10-deployment/kubernetes/`
 - **WS-Security** - SOAP security
 - **BPEL** - Business process orchestration
 - **H2 Database** - In-memory database for development
+- **Jakarta EE** - Enterprise Java APIs
 
 ## Project Structure
 
@@ -364,19 +365,19 @@ Kubernetes manifests available in `10-deployment/kubernetes/`
 │   ├── governance-policy.md    # SOA governance guidelines
 │   └── soa-design-document.md  # Detailed design specifications
 ├── services/                   # All microservices
-│   ├── catalog-service/        # SOAP-based Catalog Service
+│   ├── catalog-service/        # SOAP-based Catalog Service (Port 8080)
 │   │   ├── src/                # Service source code
 │   │   ├── Dockerfile         # Container configuration
 │   │   └── pom.xml            # Maven configuration
-│   ├── orders-service/         # REST-based Orders Service
+│   ├── orders-service/         # REST-based Orders Service (Port 8083)
 │   │   ├── src/               # Service implementation
 │   │   ├── Dockerfile        # Container configuration
 │   │   └── pom.xml           # Maven build config
-│   ├── payments-service/       # Payment Processing Service
+│   ├── payments-service/       # Payment Processing Service (Port 8083)
 │   │   ├── src/              # Service implementation
 │   │   ├── Dockerfile       # Container configuration
 │   │   └── pom.xml          # Maven build config
-│   ├── shipping-service/      # Shipping Management Service
+│   ├── shipping-service/      # Shipping Management Service (Port 8084)
 │   │   ├── src/             # Service implementation
 │   │   ├── Dockerfile      # Container configuration
 │   │   └── pom.xml         # Maven build config
