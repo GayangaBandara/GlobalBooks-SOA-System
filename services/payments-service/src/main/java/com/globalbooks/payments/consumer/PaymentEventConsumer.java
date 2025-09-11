@@ -1,7 +1,7 @@
 package com.globalbooks.payments.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.globalbooks.integration.events.PaymentRequiredEvent;
+import com.globalbooks.payments.events.PaymentRequiredEvent;
 import com.globalbooks.payments.model.Payment;
 import com.globalbooks.payments.model.PaymentStatus;
 import com.globalbooks.payments.service.PaymentService;

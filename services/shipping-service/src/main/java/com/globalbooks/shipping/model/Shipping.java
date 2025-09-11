@@ -1,7 +1,7 @@
 package com.globalbooks.shipping.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

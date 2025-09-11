@@ -1,4 +1,4 @@
-package main.java.com.globalbooks.common;
+package com.globalbooks.common;
 
 /**
  * Common constants used across services

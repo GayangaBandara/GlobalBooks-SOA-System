@@ -6,10 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.globalbooks</groupId>
-        <artifactId>soa-project</artifactId>
-        <version>1.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.globalbooks</groupId>
@@ -52,13 +52,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
-        <!-- Integration Module -->
-        <dependency>
-            <groupId>com.globalbooks</groupId>
-            <artifactId>integration</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <!-- OpenAPI/Swagger -->

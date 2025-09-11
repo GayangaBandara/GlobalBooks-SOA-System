@@ -17,9 +17,9 @@ public class PlaceOrderRoute extends RouteBuilder {
 
         // Main orchestration route - SOAP endpoint
         from("cxf:bean:placeOrderEndpoint")
-            .routeId("placeOrderProcess")
-            .log("=== STARTING ORDER PROCESS ===")
-            .log("Received order request: ${body}")
+            .routeId("placeOrderSoapProcess")
+            .log("=== STARTING SOAP ORDER PROCESS ===")
+            .log("Received SOAP order request: ${body}")
 
             // Extract order data from SOAP envelope
             .setProperty("customerId", xpath("//ord:customerId/text()", String.class, namespaces))
@@ -27,22 +27,44 @@ public class PlaceOrderRoute extends RouteBuilder {
             .setProperty("shippingAddress", xpath("//ord:shippingAddress", String.class, namespaces))
             .setProperty("paymentMethod", xpath("//ord:paymentMethod/text()", String.class, namespaces))
 
+            .to("direct:processOrder")
+            .log("=== SOAP ORDER PROCESS COMPLETED ===");
+
+        // Direct route for REST API calls
+        from("direct:placeOrderProcess")
+            .routeId("placeOrderRestProcess")
+            .log("=== STARTING REST ORDER PROCESS ===")
+            .log("Received REST order request: ${body}")
+
+            // Extract data from PlaceOrderRequest object
+            .setProperty("customerId", simple("${body.customerId}"))
+            .setProperty("orderItems", simple("${body.orderItems}"))
+            .setProperty("shippingAddress", simple("${body.shippingAddress}"))
+            .setProperty("paymentMethod", simple("${body.paymentMethod}"))
+
+            .to("direct:processOrder")
+            .log("=== REST ORDER PROCESS COMPLETED ===");
+
+        // Common processing route
+        from("direct:processOrder")
+            .routeId("processOrder")
+
             // Initialize total amount
             .setProperty("totalAmount", constant(0.0))
             .setProperty("currentItem", constant(0))
 
             // Process each order item
-            .loop(xpath("count(//ord:item)", Integer.class, namespaces))
+            .loop(simple("${body.orderItems.size()}"))
                 .setProperty("currentItem", simple("${exchangeProperty.currentItem} + 1"))
-                .setProperty("bookId", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:bookId/text()", String.class, namespaces))
-                .setProperty("quantity", xpath("//ord:item[${exchangeProperty.currentItem}]/ord:quantity/text()", Integer.class, namespaces))
+                .setProperty("bookId", simple("${body.orderItems[${exchangeProperty.currentItem}].bookId}"))
+                .setProperty("quantity", simple("${body.orderItems[${exchangeProperty.currentItem}].quantity}"))
 
                 // Call Catalog Service to get book price
                 .to("direct:getBookPrice")
                 .log("Book price retrieved: ${body}")
 
                 // Calculate subtotal and add to total
-                .setProperty("itemPrice", jsonpath("$.price"))
+                .setProperty("itemPrice", xpath("//price/text()", Double.class))
                 .setProperty("subtotal", simple("${exchangeProperty.itemPrice} * ${exchangeProperty.quantity}"))
                 .setProperty("totalAmount", simple("${exchangeProperty.totalAmount} + ${exchangeProperty.subtotal}"))
                 .log("Current total: ${exchangeProperty.totalAmount}")
@@ -60,7 +82,7 @@ public class PlaceOrderRoute extends RouteBuilder {
 
             // Check payment success and create shipment
             .choice()
-                .when(simple("${exchangeProperty.paymentStatus} == 'SUCCESS'"))
+                .when(simple("${exchangeProperty.paymentStatus} == 'SUCCESS' || ${exchangeProperty.paymentStatus} == 'COMPLETED'"))
                     .to("direct:createShipment")
                     .log("Shipment created: ${body}")
                     .setProperty("trackingNumber", jsonpath("$.trackingNumber"))
@@ -69,23 +91,19 @@ public class PlaceOrderRoute extends RouteBuilder {
             .end()
 
             // Prepare response
-            .setBody(simple("<placeOrderResponse xmlns=\"http://bpel.globalbooks.com/\">" +
-                          "<orderId>${exchangeProperty.orderId}</orderId>" +
-                          "<totalAmount>${exchangeProperty.totalAmount}</totalAmount>" +
-                          "<status>${exchangeProperty.paymentStatus}</status>" +
-                          "<trackingNumber>${exchangeProperty.trackingNumber}</trackingNumber>" +
-                          "</placeOrderResponse>"))
+            .setBody(simple("{\"orderId\":\"${exchangeProperty.orderId}\"," +
+                           "\"totalAmount\":${exchangeProperty.totalAmount}," +
+                           "\"status\":\"${exchangeProperty.paymentStatus}\"," +
+                           "\"trackingNumber\":\"${exchangeProperty.trackingNumber}\"}"));
 
-            .log("=== ORDER PROCESS COMPLETED ===")
-            .log("Final response: ${body}");
 
         // Catalog Service Route
         from("direct:getBookPrice")
             .routeId("catalogServiceRoute")
             .log("Calling Catalog Service for book: ${exchangeProperty.bookId}")
-            .setHeader("Content-Type", constant("application/json"))
-            .setBody(simple("{\"bookId\":\"${exchangeProperty.bookId}\"}"))
-            .to("http://localhost:8080/catalog/api/books/price?bridgeEndpoint=true")
+            .setHeader("Content-Type", constant("text/xml"))
+            .setBody(simple("<getBookPriceRequest xmlns=\"http://catalog.globalbooks.com/\"><bookId>${exchangeProperty.bookId}</bookId></getBookPriceRequest>"))
+            .to("http://catalog-service:8080/ws")
             .convertBodyTo(String.class);
 
         // Orders Service Route
@@ -94,9 +112,9 @@ public class PlaceOrderRoute extends RouteBuilder {
             .log("Creating order for customer: ${exchangeProperty.customerId}")
             .setHeader("Content-Type", constant("application/json"))
             .setBody(simple("{\"customerId\":\"${exchangeProperty.customerId}\"," +
-                          "\"items\":${exchangeProperty.orderItems}," +
-                          "\"totalAmount\":${exchangeProperty.totalAmount}}"))
-            .to("http://localhost:8081/api/v1/orders?bridgeEndpoint=true")
+                           "\"items\":${exchangeProperty.orderItems}," +
+                           "\"totalAmount\":${exchangeProperty.totalAmount}}"))
+            .to("http://orders-service:8081/api/v1/orders?bridgeEndpoint=true")
             .convertBodyTo(String.class);
 
         // Payments Service Route
@@ -104,21 +122,20 @@ public class PlaceOrderRoute extends RouteBuilder {
             .routeId("paymentsServiceRoute")
             .log("Processing payment for order: ${exchangeProperty.orderId}")
             .setHeader("Content-Type", constant("application/json"))
-            .setBody(simple("{\"orderId\":\"${exchangeProperty.orderId}\"," +
-                          "\"amount\":${exchangeProperty.totalAmount}," +
-                          "\"paymentMethod\":\"${exchangeProperty.paymentMethod}\"}"))
-            .to("http://localhost:8083/api/v1/payments?bridgeEndpoint=true")
+            .setBody(simple("{\"orderId\":${exchangeProperty.orderId}," +
+                           "\"customerId\":\"${exchangeProperty.customerId}\"," +
+                           "\"amount\":${exchangeProperty.totalAmount}," +
+                           "\"paymentMethod\":\"${exchangeProperty.paymentMethod}\"}"))
+            .to("http://payments-service:8083/api/v1/payments/initiate?bridgeEndpoint=true")
             .convertBodyTo(String.class);
 
         // Shipping Service Route
         from("direct:createShipment")
             .routeId("shippingServiceRoute")
             .log("Creating shipment for order: ${exchangeProperty.orderId}")
-            .setHeader("Content-Type", constant("application/json"))
-            .setBody(simple("{\"orderId\":\"${exchangeProperty.orderId}\"," +
-                          "\"shippingAddress\":${exchangeProperty.shippingAddress}," +
-                          "\"items\":${exchangeProperty.orderItems}}"))
-            .to("http://localhost:8084/api/v1/shipping?bridgeEndpoint=true")
+            .setHeader("Content-Type", constant("application/x-www-form-urlencoded"))
+            .setBody(simple("orderId=${exchangeProperty.orderId}&customerId=${exchangeProperty.customerId}&shippingAddress=${exchangeProperty.shippingAddress}&carrier=FedEx"))
+            .to("http://shipping-service:8084/api/v1/shippings?bridgeEndpoint=true")
             .convertBodyTo(String.class);
     }
 }
